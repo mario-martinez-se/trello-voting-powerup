@@ -35,6 +35,8 @@ TrelloPowerUp.initialize({
         .then(() => Promise.all(allCardsIds.map(id => t.set(id, 'shared', 'vote', 0))))
         .then(() => t.remove('board', 'shared',allMembersIds.map(id => 'membersRemainings.'+id)))
         .then(() => allCardsIds.map(id => t.remove(id, 'shared', allMembersIds.map(mId => 'votes.'+mId))))
+        
+        .then(() => t.getAll().then(data => console.log(data)))
       }
     }];
   }
