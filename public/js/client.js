@@ -37,17 +37,17 @@ TrelloPowerUp.initialize({
         .then(() => allCardsIds.map(id => t.remove(id, 'shared', allMembersIds.map(mId => 'votes.'+mId))))
       }
     }];
-  }
-  // 'card-badges': function(t, options) {
-  //   return t.get('card', 'shared', 'estimate')
-  //   .then(function(estimate) {
-  //     return [{
-  //       icon: estimate ? GREY_ROCKET_ICON : WHITE_ROCKET_ICON,
-  //       text: estimate || 'No Estimate!',
-  //       color: estimate ? null : 'red',
-  //     }];  
-  //   });
-  // },
+  },
+  'card-badges': function(t, options) {
+    return t.get('card', 'shared', 'count')
+    .then(function(count) {
+      return [{
+        icon: count ? GREY_ROCKET_ICON : WHITE_ROCKET_ICON,
+        text: count || 'No Estimate!',
+        color: count ? null : 'red',
+      }];  
+    });
+  },
   // 'card-detail-badges': function(t, options) {
   //   return t.get('card', 'shared', 'estimate')
   //   .then(function(estimate) {
