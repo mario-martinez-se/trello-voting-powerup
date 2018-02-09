@@ -29,22 +29,16 @@ window.vote.addEventListener('submit', function(event){
   var selectedVote = $('#voteNumber').val();
   var memberId;
   return t.member('id')
-  .then(function(member) {
+  .then((member) => {
     memberId = member.id;
     return t.get('board', 'shared', 'membersRemainings.'+memberId, 3);
   })
-  .then(function(remaining) {
-    return t.set('board', 'shared', 'membersRemainings.'+memberId, remaining - selectedVote );
-  })
-  .then(function() {
-    return t.get('card', 'shared', 'vote', 0);
-  })
-  .then(function(currentCount) {
-    return t.set('card', 'shared', 'vote', currentCount + selectedVote);
-  })
-  .then(function() {
-    t.closePopup();
-  });
+  .then(remaining => t.set('board', 'shared', 'membersRemainings.'+memberId, remaining - selectedVote ))
+  .then(() =>t.get('card', 'shared', 'vote', 0))
+  .then(currentCount => t.set('card', 'shared', 'vote', currentCount + selectedVote))
+  .then(() => t.get('card', 'shared', 'votes.'+memberId, 0))
+  .then(membersVotesInThisCard => t.set('card', 'shated', 'vote'))
+  .then(() => t.closePopup());
 });
 
 t.render(function(){

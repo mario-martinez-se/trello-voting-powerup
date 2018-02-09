@@ -26,21 +26,9 @@ TrelloPowerUp.initialize({
       text: 'Reset all votes',
       callback: function(t) {
         return t.cards('id')
-        .then(function(allCardsId) {
-          var promises = allCardsId.map(card => t.set(card.id, 'shared', 'vote', 0));
-          return Promise.all(promises);
-        })
-        .then(function() {
-          return t.board('members');
-        })
-        .then(function(board) {
-          var allMembersId = board.members.map(m => m.id);
-          console.log(allMembersId);
-          return Promise.all(allMembersId.map(id => t.set('board', 'shared', 'membersRemainings.'+id, 3)))
-        })
-        .then(function() {
-          t.getAll().then(data => console.log(data));
-        })
+        .then(allCardsId => Promise.all(allCardsId.map(card => t.set(card.id, 'shared', 'vote', 0))))
+        .then(() => t.board('members'))
+        .then(board => t.remove('board', 'shared', board.members.map(m => 'membersRemainings.'+m.id)))
       }
     }];
   }
