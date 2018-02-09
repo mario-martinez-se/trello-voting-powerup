@@ -20,6 +20,21 @@ TrelloPowerUp.initialize({
 	}
 		}];
 	},
+  'board-buttons': function(t, options) {
+    return [{
+      icon: BLACK_ROCKET_ICON,
+      text: 'Reset all votes',
+      callback: function(t) {
+        return t.cards('id')
+        .then(function(allCardsId) {
+          var promises = allCardsId.map(function(cardId) {
+            return t.set(cardId, 'shared', 'vote', 0);
+          });
+          return Promise.all(promises);
+        })
+      }
+    }];
+  }
   // 'card-badges': function(t, options) {
   //   return t.get('card', 'shared', 'estimate')
   //   .then(function(estimate) {
