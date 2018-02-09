@@ -2,24 +2,25 @@ var t = TrelloPowerUp.iframe();
 
 
 window.reset.addEventListener('click', function(){
-  var votedByThisMember = 0;
-  return t.member('id')
-  .then(function(memberId) {
-    return t.get('card', 'shared', memberId, 0);
-  })
-  .then(function(memberVotes) {
-    votedByThisMember = memberVotes;
-    return t.get('member', 'shared', 'remaining', 0);
-  })
-  .then(function(currentRemaining) {
-    return t.set('member', 'shared', 'remaining', currentRemaining + votedByThisMember);
-  })
-  .then(function() {
-    return t.get('card', 'shared', 'vote', 0);
-  })
-  .then(function(currentCount) {
-    return t.set('card', 'shared', 'vote', currentCount - votedByThisMember);
-  })
+  // TODO!!
+  // var votedByThisMember = 0;
+  // return t.member('id')
+  // .then(function(memberId) {
+  //   return t.get('card', 'shared', memberId, 0);
+  // })
+  // .then(function(memberVotes) {
+  //   votedByThisMember = memberVotes;
+  //   return t.get('member', 'shared', 'remaining', 0);
+  // })
+  // .then(function(currentRemaining) {
+  //   return t.set('member', 'shared', 'remaining', currentRemaining + votedByThisMember);
+  // })
+  // .then(function() {
+  //   return t.get('card', 'shared', 'vote', 0);
+  // })
+  // .then(function(currentCount) {
+  //   return t.set('card', 'shared', 'vote', currentCount - votedByThisMember);
+  // })
 });
 
 window.vote.addEventListener('submit', function(event){
@@ -30,11 +31,10 @@ window.vote.addEventListener('submit', function(event){
   return t.member('id')
   .then(function(member) {
     memberId = member.id;
-    return t.get('board', 'shared', 'membersRemainings', {});
+    return t.get('board', 'shared', 'membersRemainings.'+memberId, 3);
   })
-  .then(function(membersRemainings) {
-    var currentRemaining = membersRemainings[memberId];
-    return t.set('board', 'shared', 'membersRemainings.'+memberId, (currentRemaining ? currentRemaining : 3) - selectedVote );
+  .then(function(remaining) {
+    return t.set('board', 'shared', 'membersRemainings.'+memberId, remaining - selectedVote );
   })
   .then(function() {
     return t.get('card', 'shared', 'vote', 0);
@@ -52,13 +52,8 @@ t.render(function(){
   return t.member('id')
   .then(function(member) {
     memberId = member.id;
-    t.get('board','shared', 'membersReaminings', {})  
+    return t.get('board','shared', 'membersRemainings.'+memberId, 3);
   })
-  .then(function(membersReaminings) {
-    var currentUserRemaining = membersReaminings[memberId] ? membersReaminings[memberId] : 3;
-  })
-  
-  return t.get('member', 'shared', 'remaining', 3)
   .then(function(remaining) {
     var options = [];
     for (var i = 0; i < remaining; i++) {
