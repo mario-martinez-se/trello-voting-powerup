@@ -30,12 +30,16 @@ TrelloPowerUp.initialize({
           var promises = allCardsId.map(card => t.set(card.id, 'shared', 'vote', 0));
           return Promise.all(promises);
         })
-        .then(() => t.board('members'))
+        .then(function() {
+          return t.board('members');
+        })
         .then(function(board) {
-          t.getAll().then((data) => console.log(data));
-          // return t.set("56d56c20aa79aa79d566c694", 'shared', 'remaining', 3);
-          // var promises = board.members.map(m => m.id).map(id => t.set(id, 'shared', 'remaining', 3));
-          //return Promise.all(promises);
+          var allMembersId = board.members.map(m => m.id);
+          console.log(allMembersId);
+          return Promise.all(allMembersId.map(id => t.set('board', 'shared', 'membersRemainings.'+id, 3)))
+        })
+        .then(function() {
+          t.getAll().then(data => console.log(data));
         })
       }
     }];
