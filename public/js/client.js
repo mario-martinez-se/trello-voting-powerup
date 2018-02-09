@@ -27,7 +27,14 @@ TrelloPowerUp.initialize({
         icon: estimate ? GREY_ROCKET_ICON : WHITE_ROCKET_ICON,
         text: estimate || 'No Estimate!',
         color: estimate ? null : 'red',
-      }Z];  
+      }];  
     });
+  },
+  'card-detail-badges': function(t, options) {
+    return [{
+      title: 'Estimate',
+      color: 'red',
+      text: 'Large',
+    }]
   }
 });
