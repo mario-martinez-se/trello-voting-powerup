@@ -7,19 +7,13 @@ window.reset.addEventListener('click', function(event){
   var memberId;
   return t.member('id')
   .then(member => memberId = member.id)
-  .then(() => t.get('card', 'shared', 'votes.' + memberId, 0))
-  .then(votes => {
-    votedByMember = votes
-  })
+  .then(() => t.get('card', 'shared', 'votesByMember.' + memberId, 0))
+  .then(votes => votedByMember = votes)
   .then(() => t.get('card', 'shared', 'vote', 0))
-  .then(count => {
-    t.set('card', 'shared', 'vote', count - votedByMember)
-   })
+  .then(count => t.set('card', 'shared', 'count', count - votedByMember))
   .then(() => t.get('board', 'shared', 'membersRemainings.' + memberId, 3))
-  .then(memberRemaining => {
-    t.set('board', 'shared', 'membersRemainings.' + memberId, memberRemaining + votedByMember)
-  })
-  .then(() => t.set('card', 'shared', 'votes.'+memberId, 0))
+  .then(memberRemaining => t.set('board', 'shared', 'membersRemainings.' + memberId, memberRemaining + votedByMember))
+  .then(() => t.set('card', 'shared', 'votesByMember.'+memberId, 0))
 });
 
 window.vote.addEventListener('submit', function(event){
@@ -33,19 +27,14 @@ window.vote.addEventListener('submit', function(event){
     return t.get('board', 'shared', 'membersRemainings.'+memberId, 3);
   })
   .then(remaining => t.set('board', 'shared', 'membersRemainings.'+memberId, remaining - selectedVote ))
-  .then(() =>t.get('card', 'shared', 'vote', 0))
-  .then(currentCount => t.set('card', 'shared', 'vote', currentCount + selectedVote))
+  .then(() =>t.get('card', 'shared', 'count', 0))
+  .then(currentCount => t.set('card', 'shared', 'count', currentCount + selectedVote))
   .then(() => t.get('card', 'shared', 'votes.'+memberId, 0))
-  .then(membersVotesInThisCard => {
-    t.set('card', 'shared', 'votes.'+memberId, membersVotesInThisCard + selectedVote)
-  })
+  .then(membersVotesInThisCard => t.set('card', 'shared', 'votesByMember.'+memberId, membersVotesInThisCard + selectedVote))
   .then(() => t.closePopup());
 });
 
 t.render(function(){
-  
-  t.getAll().then(data => console.log(data));
-  
   var memberId;
   return t.member('id')
   .then(function(member) {
@@ -53,7 +42,6 @@ t.render(function(){
     return t.get('board','shared', 'membersRemainings.'+memberId, 3);
   })
   .then(function(remaining) {
-    console.log(remaining);
     var options = [];
     for (var i = 0; i < remaining; i++) {
       options.push(i+1);
