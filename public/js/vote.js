@@ -26,8 +26,16 @@ window.vote.addEventListener('submit', function(event){
   // Stop the browser trying to submit the form itself.
   event.preventDefault();
   var selectedVote = $('#voteNumber').val();
-  return 
-
+  var memberId;
+  return t.member('id')
+  .then(function(member) {
+    memberId = member.id;
+    return t.get('board', 'shared', 'membersRemainings', {});
+  })
+  .then(function(membersRemainings) {
+    t.set('board', 'shared', 'membersRemainings', ))
+  })
+  
   return t.get('member', 'shared', 'remaining', 3)
   .then(function(remaining) {
     return t.set('member', 'shared', 'remaining', remaining - selectedVote);
