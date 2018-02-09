@@ -18,9 +18,11 @@ t.render(function(){
     return options;
   })
   .then(function(){
-    $('')
-  })
-  .then(function(){
+    $(document).ready(function () {
+      $('#vote').hide();
+    });
+    
+    //$('#voteNumber option[value="1"]').attr('disabled','disabled');
     t.sizeTo('#vote').done();
   });
 });
