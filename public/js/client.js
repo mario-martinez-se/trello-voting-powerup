@@ -42,9 +42,9 @@ TrelloPowerUp.initialize({
     return t.get('card', 'shared', 'count')
     .then(function(count) {
       return [{
-        icon: count ? GREY_ROCKET_ICON : WHITE_ROCKET_ICON,
-        text: count || 'No Estimate!',
-        color: count ? null : 'red',
+        icon: GREY_ROCKET_ICON,
+        text: count || '0',
+        color: 'black',
       }];  
     });
   },
