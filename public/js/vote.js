@@ -2,7 +2,24 @@ var t = TrelloPowerUp.iframe();
 
 
 window.reset.addEventListener('click', function(){
-  return t.get
+  var votedByThisMember = 0;
+  return t.member('id')
+  .then(function(memberId) {
+    return t.get('card', 'shared', memberId, 0);
+  })
+  .then(function(memberVotes) {
+    votedByThisMember = memberVotes;
+    return t.get('member', 'shared', 'remaining', 0);
+  })
+  .then(function(currentRemaining) {
+    return t.set('member', 'shared', 'remaining', currentRemaining + votedByThisMember);
+  })
+  .then(function() {
+    return t.get('card', 'shared', 'vote', 0);
+  })
+  .then(function(currentCount) {
+    return t.set('card', 'shared', 'vote', currentCount - votedByThisMember);
+  })
 });
 
 window.vote.addEventListener('submit', function(event){
@@ -20,7 +37,10 @@ window.vote.addEventListener('submit', function(event){
     return t.set('card', 'shared', 'vote', currentCount + selectedVote);
   })
   .then(function() {
-    return t.set('card', 'shared',)
+    return t.member('id')
+  })
+  .then(function(memberId){
+    return t.set('card', 'shared', memberId, 'currentCount');
   })
   .then(function() {
     t.closePopup();
