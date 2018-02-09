@@ -6,12 +6,18 @@ window.reset.addEventListener('click', function(){
   var memberId;
   return t.member('id')
   .then(member => memberId = member.id)
-  .then(() => t.get('card', 'shared', 'votes.' + memberId))
-  .then(votes => votedByMember = votes)
+  .then(() => t.get('card', 'shared', 'votes.' + memberId, 0))
+  .then(votes => {
+    votedByMember = votes
+  })
   .then(() => t.get('card', 'shared', 'vote', 0))
-  .then(count => t.set('card', 'shared', 'vote', count - votedByMember))
+  .then(count => {
+    t.set('card', 'shared', 'vote', count - votedByMember)
+   })
   .then(() => t.get('board', 'shared', 'membersRemainings.' + memberId, 3))
-  .then(memberRemaining => t.set('board', 'shared', 'membersRemainings.' + memberId, memberRemaining + votedByMember))
+  .then(memberRemaining => {
+    t.set('board', 'shared', 'membersRemainings.' + memberId, memberRemaining + votedByMember)
+  })
   .then(() => t.set('card', 'shared', 'votes.'+memberId, 0))
 });
 
