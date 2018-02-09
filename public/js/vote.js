@@ -1,30 +1,31 @@
 var t = TrelloPowerUp.iframe();
 
 
-window.reset.addEventListener('click', function(){
+window.reset.addEventListener('click', function(event){
+  event.preventDefault();
   var votedByMember = 0;
   var memberId;
   return t.member('id')
-  // .then(member => memberId = member.id)
-  // .then(() => t.get('card', 'shared', 'votes.' + memberId, 0))
-  // .then(votes => {
-  //   votedByMember = votes
-  // })
-  // .then(() => t.get('card', 'shared', 'vote', 0))
-  // .then(count => {
-  //   t.set('card', 'shared', 'vote', count - votedByMember)
-  //  })
-  // .then(() => t.get('board', 'shared', 'membersRemainings.' + memberId, 3))
-  // .then(memberRemaining => {
-  //   t.set('board', 'shared', 'membersRemainings.' + memberId, memberRemaining + votedByMember)
-  // })
-  // .then(() => t.set('card', 'shared', 'votes.'+memberId, 0))
+  .then(member => memberId = member.id)
+  .then(() => t.get('card', 'shared', 'votes.' + memberId, 0))
+  .then(votes => {
+    votedByMember = votes
+  })
+  .then(() => t.get('card', 'shared', 'vote', 0))
+  .then(count => {
+    t.set('card', 'shared', 'vote', count - votedByMember)
+   })
+  .then(() => t.get('board', 'shared', 'membersRemainings.' + memberId, 3))
+  .then(memberRemaining => {
+    t.set('board', 'shared', 'membersRemainings.' + memberId, memberRemaining + votedByMember)
+  })
+  .then(() => t.set('card', 'shared', 'votes.'+memberId, 0))
 });
 
 window.vote.addEventListener('submit', function(event){
   // Stop the browser trying to submit the form itself.
   event.preventDefault();
-  var selectedVote = $('#voteNumber').val();
+  var selectedVote = parseInt($('#voteNumber').val());
   var memberId;
   return t.member('id')
   .then((member) => {
@@ -35,11 +36,16 @@ window.vote.addEventListener('submit', function(event){
   .then(() =>t.get('card', 'shared', 'vote', 0))
   .then(currentCount => t.set('card', 'shared', 'vote', currentCount + selectedVote))
   .then(() => t.get('card', 'shared', 'votes.'+memberId, 0))
-  .then(membersVotesInThisCard => t.set('card', 'shared', 'votes.'+memberId, membersVotesInThisCard + selectedVote))
+  .then(membersVotesInThisCard => {
+    t.set('card', 'shared', 'votes.'+memberId, membersVotesInThisCard + selectedVote)
+  })
   .then(() => t.closePopup());
 });
 
 t.render(function(){
+  
+  t.getAll().then(data => console.log(data));
+  
   var memberId;
   return t.member('id')
   .then(function(member) {
