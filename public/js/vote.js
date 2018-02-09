@@ -1,5 +1,10 @@
 var t = TrelloPowerUp.iframe();
 
+
+window.reset.addEventListener('click', function(){
+  return t.get
+});
+
 window.vote.addEventListener('submit', function(event){
   // Stop the browser trying to submit the form itself.
   event.preventDefault();
@@ -12,10 +17,14 @@ window.vote.addEventListener('submit', function(event){
     return t.get('card', 'shared', 'vote', 0);
   })
   .then(function(currentCount) {
-    return t.set('card', 'shared', 'vote', currentCount + selectedVote)
+    return t.set('card', 'shared', 'vote', currentCount + selectedVote);
   })
-  //return t.set('card', 'shared', 'vote', window.voteNumber.value)
-  t.closePopup();
+  .then(function() {
+    return t.set('card', 'shared',)
+  })
+  .then(function() {
+    t.closePopup();
+  });
 });
 
 t.render(function(){
