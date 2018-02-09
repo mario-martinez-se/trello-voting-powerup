@@ -25,10 +25,15 @@ TrelloPowerUp.initialize({
       icon: BLACK_ROCKET_ICON,
       text: 'Reset all votes',
       callback: function(t) {
+        var allMembersIds = [];
+        var allCardsIds = [];
         return t.cards('id')
-        .then(allCardsId => Promise.all(allCardsId.map(card => t.set(card.id, 'shared', 'vote', 0))))
         .then(() => t.board('members'))
-        .then(board => t.remove('board', 'shared', board.members.map(m => 'membersRemainings.'+m.id)))
+        .then(board => allMembersIds = board.members.map(m => m.id))
+        .then(() => t.cards('id'))
+        .then(allCards => allCardsIds = allCards.map(c => c.id))
+        //.then(allCardsId => Promise.all(allCardsIds.map(id => t.set(id, 'shared', 'vote', 0))))
+        //.then(board => t.remove('board', 'shared',allMembersIds.map(id => 'membersRemainings.'+id)))
       }
     }];
   }

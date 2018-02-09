@@ -37,7 +37,7 @@ window.vote.addEventListener('submit', function(event){
   .then(() =>t.get('card', 'shared', 'vote', 0))
   .then(currentCount => t.set('card', 'shared', 'vote', currentCount + selectedVote))
   .then(() => t.get('card', 'shared', 'votes.'+memberId, 0))
-  .then(membersVotesInThisCard => t.set('card', 'shated', 'vote'))
+  .then(membersVotesInThisCard => t.set('card', 'shared', 'votes.'+memberId, membersVotesInThisCard + selectedVote))
   .then(() => t.closePopup());
 });
 
