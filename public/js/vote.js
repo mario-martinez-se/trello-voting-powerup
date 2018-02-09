@@ -33,12 +33,8 @@ window.vote.addEventListener('submit', function(event){
     return t.get('board', 'shared', 'membersRemainings', {});
   })
   .then(function(membersRemainings) {
-    t.set('board', 'shared', 'membersRemainings', ))
-  })
-  
-  return t.get('member', 'shared', 'remaining', 3)
-  .then(function(remaining) {
-    return t.set('member', 'shared', 'remaining', remaining - selectedVote);
+    var currentRemaining = membersRemainings[memberId];
+    return t.set('board', 'shared', 'membersRemainings.'+memberId, (currentRemaining ? currentRemaining : 3) - selectedVote );
   })
   .then(function() {
     return t.get('card', 'shared', 'vote', 0);
@@ -47,17 +43,21 @@ window.vote.addEventListener('submit', function(event){
     return t.set('card', 'shared', 'vote', currentCount + selectedVote);
   })
   .then(function() {
-    return t.member('id')
-  })
-  .then(function(memberId){
-    return t.set('card', 'shared', memberId, 'currentCount');
-  })
-  .then(function() {
     t.closePopup();
   });
 });
 
 t.render(function(){
+  var memberId;
+  return t.member('id')
+  .then(function(member) {
+    memberId = member.id;
+    t.get('board','shared', 'membersReaminings', {})  
+  })
+  .then(function(membersReaminings) {
+    var currentUserRemaining = membersReaminings[memberId] ? membersReaminings[memberId] : 3;
+  })
+  
   return t.get('member', 'shared', 'remaining', 3)
   .then(function(remaining) {
     var options = [];
