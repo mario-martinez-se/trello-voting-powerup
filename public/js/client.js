@@ -27,18 +27,16 @@ TrelloPowerUp.initialize({
       callback: function(t) {
         return t.cards('id')
         .then(function(allCardsId) {
-          retu
-          // var promises = allCardsId.map(function(cardId) {
-          //   console.log(cardId);
-          //   return t.set(cardId, 'shared', 'vote', 0);
-          // });
-          // return Promise.all(promises);
+          var promises = allCardsId.map(function(card) {
+            return t.set(card.id, 'shared', 'vote', 0);
+          });
+          return Promise.all(promises);
         })
         .then(function() {
           return t.board('members');
         })
-        .then(function(members) {
-          var promises = members.map(m => m.id).map(id => t.remove(id, 'shared', 'remaining'));
+        .then(function(board) {
+          var promises = board.members.map(m => m.id).map(id => t.remove(id, 'shared', 'remaining'));
           return Promise.all(promises);
         })
       }
