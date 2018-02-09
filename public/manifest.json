@@ -7,9 +7,7 @@
   "author": "Trello, Inc.",
   "capabilities": [
     "callback",
-    "card-buttons",
-    "card-badges",
-    "card-detail-badges"
+    "card-buttons"
   ],
   "connectors": {
     "iframe": {

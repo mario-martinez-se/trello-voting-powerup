@@ -11,39 +11,39 @@ TrelloPowerUp.initialize({
 	'card-buttons': function(t, options) {
 		return [{
 			icon: BLACK_ROCKET_ICON,
-			text: 'Estimate Size',
+			text: 'Vote!',
       callback: function(t) {
       return t.popup({
-        title: "Estimation",
-        url: 'estimate.html',
+        title: "Vote",
+        url: 'vote.html',
       });
 	}
 		}];
 	},
-  'card-badges': function(t, options) {
-    return t.get('card', 'shared', 'estimate')
-    .then(function(estimate) {
-      return [{
-        icon: estimate ? GREY_ROCKET_ICON : WHITE_ROCKET_ICON,
-        text: estimate || 'No Estimate!',
-        color: estimate ? null : 'red',
-      }];  
-    });
-  },
-  'card-detail-badges': function(t, options) {
-    return t.get('card', 'shared', 'estimate')
-    .then(function(estimate) {
-      return [{
-        title: 'Estimate',
-        text: estimate || 'No Estimate!',
-        color: estimate ? null : 'red',
-        callback: function(t) {
-          return t.popup({
-            title: "Estimation",
-            url: 'estimate.html',
-          });
-        }
-      }]
-    });
-  }
+  // 'card-badges': function(t, options) {
+  //   return t.get('card', 'shared', 'estimate')
+  //   .then(function(estimate) {
+  //     return [{
+  //       icon: estimate ? GREY_ROCKET_ICON : WHITE_ROCKET_ICON,
+  //       text: estimate || 'No Estimate!',
+  //       color: estimate ? null : 'red',
+  //     }];  
+  //   });
+  // },
+  // 'card-detail-badges': function(t, options) {
+  //   return t.get('card', 'shared', 'estimate')
+  //   .then(function(estimate) {
+  //     return [{
+  //       title: 'Estimate',
+  //       text: estimate || 'No Estimate!',
+  //       color: estimate ? null : 'red',
+  //       callback: function(t) {
+  //         return t.popup({
+  //           title: "Estimation",
+  //           url: 'estimate.html',
+  //         });
+  //       }
+  //     }]
+  //   });
+  // }
 });
