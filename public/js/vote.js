@@ -2,6 +2,12 @@ var t = TrelloPowerUp.iframe();
 
 
 window.reset.addEventListener('click', function(){
+  var votedByMember = 0;
+  return t.member('id')
+  .then(member => t.get('card', 'shared', 'votes.' + member.id))
+  .then(votes => votedByMember = votes)
+  .then(() => t.get('card', 'shared', 'vote', 0))
+  .then(count => t.set('card', 'shared', 'vote', count - votedByMember))
   // TODO!!
   // var votedByThisMember = 0;
   // return t.member('id')
