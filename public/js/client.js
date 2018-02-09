@@ -31,10 +31,19 @@ TrelloPowerUp.initialize({
     });
   },
   'card-detail-badges': function(t, options) {
-    return [{
-      title: 'Estimate',
-      color: 'red',
-      text: 'Large',
-    }]
+    return t.get('card', 'shared', 'estimate')
+    .then(function(estimate) {
+      return [{
+        title: 'Estimate',
+        text: estimate || 'No Estimate!',
+        color: estimate ? null : 'red',
+        callback: function(t) {
+          return t.popup({
+            title: "Estimation",
+            url: 'estimate.html',
+          });
+        }
+      }]
+    });
   }
 });
