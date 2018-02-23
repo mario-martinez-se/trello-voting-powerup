@@ -1,4 +1,5 @@
 /* global TrelloPowerUp */
+var _ = _ || {}
 
 var Promise = TrelloPowerUp.Promise;
 
@@ -33,6 +34,11 @@ TrelloPowerUp.initialize({
         .then(() => t.cards('id'))
         .then(allCards => allCardsIds = allCards.map(c => c.id))
         .then(() => Promise.all(allCardsIds.map(id => t.set(id, 'shared', 'count', 0))))
+        .then(() => Promise.all(
+                    _.flatten(allCardsIds.map(cardId => allMembersIds.map((memberId => ({cardId: cardId, memberId: memberId})))), true)
+                    .map(pair => t.set(pair.cardId, 'shared', 'votesByMember.'+pair.memberId, 0))
+                  )
+             )
         .then(() => t.remove('board', 'shared',allMembersIds.map(id => 'membersRemainings.'+id)))
         .then(() => allCardsIds.map(id => t.remove(id, 'shared', allMembersIds.map(mId => 'votes.'+mId))))
       }
