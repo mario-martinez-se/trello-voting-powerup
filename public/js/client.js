@@ -3,15 +3,11 @@ var _ = _ || {}
 
 var Promise = TrelloPowerUp.Promise;
 
-var GREY_ROCKET_ICON = 'https://cdn.glitch.com/c69415fd-f70e-4e03-b43b-98b8960cd616%2Frocket-ship-grey.png?1496162964717';
-var WHITE_ROCKET_ICON = 'https://cdn.glitch.com/c69415fd-f70e-4e03-b43b-98b8960cd616%2Fwhite-rocket-ship.png?1495811896182';
-var BLACK_ROCKET_ICON = 'https://cdn.glitch.com/1b42d7fe-bda8-4af8-a6c8-eff0cea9e08a%2Frocket-ship.png?1494946700421';
-
 TrelloPowerUp.initialize({
   // Start adding handlers for your capabilities here!
 	'card-buttons': function(t, options) {
 		return [{
-			icon: BLACK_ROCKET_ICON,
+			icon: "https://cdn.glitch.com/d0d3d13a-bb36-42f5-837a-10a11a05b28c%2Ffavorite.png?1519391551505",
 			text: 'Vote!',
       callback: function(t) {
       return t.popup({
@@ -23,7 +19,7 @@ TrelloPowerUp.initialize({
 	},
   'board-buttons': function(t, options) {
     return [{
-      icon: BLACK_ROCKET_ICON,
+      icon: "https://cdn.glitch.com/d0d3d13a-bb36-42f5-837a-10a11a05b28c%2Ffavorite_half.png?1519394247923",
       text: 'Reset all votes',
       callback: function(t) {
         var allMembersIds = [];
@@ -45,10 +41,10 @@ TrelloPowerUp.initialize({
     }];
   },
   'card-badges': function(t, options) {
-    return t.get('card', 'shared', 'count')
+    return t.get('card', 'shared', 'count', 0)
     .then(function(count) {
       return [{
-        icon: GREY_ROCKET_ICON,
+        icon: count > 0 ? "https://cdn.glitch.com/d0d3d13a-bb36-42f5-837a-10a11a05b28c%2Ffavorite_black.png?1519393882625" : "https://cdn.glitch.com/d0d3d13a-bb36-42f5-837a-10a11a05b28c%2Ffavorite.png?1519391551505",
         text: count || '0',
         color: 'black',
       }];  
