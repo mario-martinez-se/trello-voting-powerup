@@ -1,10 +1,10 @@
 {
-  "name": ".🏃🏽 Sprints 🏃.",
-  "details":"A Power-Up to demonstrate all of the things you can do with Power-Ups!",
+  "name": "Voting system",
+  "details":"Voting system for cards",
   "icon": {
     "url": "https://cdn.glitch.com/1b42d7fe-bda8-4af8-a6c8-eff0cea9e08a%2Fstartup.png?1494946700268"
   },
-  "author": "Trello, Inc.",
+  "author": "Mario Martinez Campos",
   "capabilities": [
     "callback",
     "card-buttons",

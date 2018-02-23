@@ -1,26 +1,20 @@
 <html>
   <head>
     <link rel="stylesheet" href="https://p.trellocdn.com/power-up.min.css">
-    <style>
-      select { height: 30px; }
-    </style>
+    <link rel="stylesheet" href="./css/styles.css">
     <script src="https://p.trellocdn.com/power-up.min.js"></script>
   </head>
   <body>
-    <form id="vote">
-      <label for="voteNumber">Vote:</label>
-      <select name="vote" id="voteNumber">
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-      </select>
-      <button type="submit" class="mod-primary">Save</button>
-      <button id="reset" class="mod-danger">Reset</button>
-    </form>
-    <script src="./js/vote.js"></script>
+    <div id="button-set">
+      <button class="voting-button" id="vote-1"></button>
+      <button class="voting-button" id="vote-2"></button>
+      <button class="voting-button" id="vote-3"></button>
+    </div>
     <script
-  src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-  integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E="
-  crossorigin="anonymous"></script>
+      src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+      integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E="
+      crossorigin="anonymous">
+    </script>
+    <script src="./js/vote.js"></script>
   </body>
 </html>
