@@ -20,8 +20,7 @@ $(document).ready(function () {
 function clearAllVotes() {
   var allMembersIds = [];
   var allCardsIds = [];
-  return t.cards('id')
-  .then(() => t.board('members'))
+  return t.board('members')
   .then(board => allMembersIds = board.members.map(m => m.id))
   .then(() => t.cards('id'))
   .then(allCards => allCardsIds = allCards.map(c => c.id))
@@ -40,3 +39,35 @@ function clearAllVotes() {
 function onReject(error) {
   console.log(error);
 }
+
+t.render(function(){
+  var allCardsIds = [];
+  var memberThatVoted = [];
+  var allMembers = [];
+  return t.cards('id')
+  .then(allCards => allCardsIds = allCards.map(c => c.id))
+  .then(() => Promise.all(allCardsIds.map(cardId => t.get(cardId, 'shared', 'count'))))
+  .then(values => {
+    var total = _.reduce(values, (memo, num) => memo + num, 0);
+    $('#total-count').text(total);
+  })
+  .then(() => t.board('members'))
+  .then(board => {
+    allMembers = board.members;
+    return Promise.all(allMembers.map(m => m.id).map(id => t.get('board', 'shared', 'membersRemainings.'+id, 3)))
+  })
+  .then(values => {
+    var remainingVotes = _.zip(allMembers, values);
+    $('#member-list').empty();
+    remainingVotes.sort((a, b) => a[1] == b[1] ? 0 : (a[1]>b[1] ? 1 : -1)).forEach((pair) => {
+      var avatar = pair[0]['avatar'];
+      var initials = pair[0]['initials'];
+      var count = pair[1];
+      var icon = avatar ? `<img class='avatar-img' src=${avatar}>` : `<span class='initials'>${initials}</span>`      
+      $('#member-list').append(`<li>${icon} <span class='stars'>${Array.apply(null, Array(count)).map(_ => "<span class='star-icon available'></span>").join('')}${Array.apply(null, Array(3-count)).map(_ => "<span class='star-icon unavailable'></span>").join('')}</span></li>`)
+    });
+  })
+  .then(() => t.sizeTo('#control-panel').done())
+
+  .catch(onReject);
+});
