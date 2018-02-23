@@ -22,25 +22,10 @@ TrelloPowerUp.initialize({
       icon: "https://cdn.glitch.com/d0d3d13a-bb36-42f5-837a-10a11a05b28c%2Ffavorite_half.png?1519394247923",
       text: 'Votes control',
       callback: function(t) {
-        return t.popup({
-          title: "Votes Control",
+        return t.modal({
+          title: "Votes Control Panel",
           url: 'votes_control.html'
         });
-        // var allMembersIds = [];
-        // var allCardsIds = [];
-        // return t.cards('id')
-        // .then(() => t.board('members'))
-        // .then(board => allMembersIds = board.members.map(m => m.id))
-        // .then(() => t.cards('id'))
-        // .then(allCards => allCardsIds = allCards.map(c => c.id))
-        // .then(() => Promise.all(allCardsIds.map(id => t.set(id, 'shared', 'count', 0))))
-        // .then(() => Promise.all(
-        //             _.flatten(allCardsIds.map(cardId => allMembersIds.map((memberId => ({cardId: cardId, memberId: memberId})))), true)
-        //             .map(pair => t.set(pair.cardId, 'shared', 'votesByMember.'+pair.memberId, 0))
-        //           )
-        //      )
-        // .then(() => t.remove('board', 'shared',allMembersIds.map(id => 'membersRemainings.'+id)))
-        // .then(() => allCardsIds.map(id => t.remove(id, 'shared', allMembersIds.map(mId => 'votes.'+mId))))
       }
     }];
   },
@@ -53,21 +38,5 @@ TrelloPowerUp.initialize({
         color: 'black',
       }];  
     });
-  },
-  // 'card-detail-badges': function(t, options) {
-  //   return t.get('card', 'shared', 'estimate')
-  //   .then(function(estimate) {
-  //     return [{
-  //       title: 'Estimate',
-  //       text: estimate || 'No Estimate!',
-  //       color: estimate ? null : 'red',
-  //       callback: function(t) {
-  //         return t.popup({
-  //           title: "Estimation",
-  //           url: 'estimate.html',
-  //         });
-  //       }
-  //     }]
-  //   });
-  // }
+  }
 });

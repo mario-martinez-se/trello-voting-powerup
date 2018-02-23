@@ -32,7 +32,7 @@ function clearAllVotes() {
        )
   .then(() => t.remove('board', 'shared',allMembersIds.map(id => 'membersRemainings.'+id)))
   .then(() => allCardsIds.map(id => t.remove(id, 'shared', allMembersIds.map(mId => 'votes.'+mId))))
-  .then(() => t.closePopup())
+  .then(() => t.closeModal())
   .catch(onReject);
 }
 
@@ -41,13 +41,17 @@ function onReject(error) {
 }
 
 t.render(function(){
-  var allCardsIds = [];
+  var allCards = [];
   var memberThatVoted = [];
   var allMembers = [];
-  return t.cards('id')
-  .then(allCards => allCardsIds = allCards.map(c => c.id))
-  .then(() => Promise.all(allCardsIds.map(cardId => t.get(cardId, 'shared', 'count'))))
+  var allCount = [];
+  return t.cards('id', 'name', 'shortLink')
+  .then(cards => {
+    allCards = cards;
+  })
+  .then(() => Promise.all(allCards.map(card => t.get(card.id, 'shared', 'count', 0))))
   .then(values => {
+    allCount = values;
     var total = _.reduce(values, (memo, num) => memo + num, 0);
     $('#total-count').text(total);
   })
@@ -57,6 +61,16 @@ t.render(function(){
     return Promise.all(allMembers.map(m => m.id).map(id => t.get('board', 'shared', 'membersRemainings.'+id, 3)))
   })
   .then(values => {
+    $('#top-cards').empty()
+    var sortedCards = _.zip(allCards, allCount).sort((a, b) => a[1] == b[1] ? 0 : (a[1]<b[1] ? 1 : -1)).map(pair => ({shortLink: pair[0]['shortLink'],name:pair[0]['name']}));
+    sortedCards.slice(0, 3).forEach(cardData => {
+      $('#top-cards').append(`<li><a class="card-link" data-shortlink="${cardData.shortLink}" href="javascript:void(0);">${cardData.name}</li>`)
+    });
+    
+    $('.card-link').click((event) => {
+      t.showCard($(event.target).data('shortlink'));
+    });
+    
     var remainingVotes = _.zip(allMembers, values);
     $('#member-list').empty();
     remainingVotes.sort((a, b) => a[1] == b[1] ? 0 : (a[1]>b[1] ? 1 : -1)).forEach((pair) => {
