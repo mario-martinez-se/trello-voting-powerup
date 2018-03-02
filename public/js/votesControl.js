@@ -25,14 +25,11 @@ function clearAllVotes() {
   .then(() => t.cards('id'))
   .then(allCards => allCardsIds = allCards.map(c => c.id))
   .then(() => Promise.all(allCardsIds.map(id => t.set(id, 'shared', 'count', 0))))
-  .then(() => Promise.all(
-              _.flatten(allCardsIds.map(cardId => allMembersIds.map((memberId => ({cardId: cardId, memberId: memberId})))), true)
-              .map(pair => t.set(pair.cardId, 'shared', 'votesByMember.'+pair.memberId, 0))
-            )
-       )
   .then(() => t.remove('board', 'shared',allMembersIds.map(id => 'membersRemainings.'+id)))
-  .then(() => allCardsIds.map(id => t.remove(id, 'shared', allMembersIds.map(mId => 'votes.'+mId))))
-  .then(() => t.closeModal())
+  .then(() => t.getAll())
+  .then(data => t.remove('board', 'shared', Object.keys(data.board.shared)))
+  
+  .then(() => t.closeModal())  
   .catch(onReject);
 }
 

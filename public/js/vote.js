@@ -38,6 +38,7 @@ $(document).ready(function () {
 
 function vote(selectedVote) {
   var memberId;
+  var cardId;
   return t.member('id')
   .then((member) => {
     memberId = member.id;
@@ -46,15 +47,16 @@ function vote(selectedVote) {
   .then(remaining => t.set('board', 'shared', 'membersRemainings.'+memberId, remaining - selectedVote ))
   .then(() =>t.get('card', 'shared', 'count', 0))
   .then(currentCount => t.set('card', 'shared', 'count', currentCount + selectedVote))
-  .then(() => t.get('card', 'shared', 'votesByMember.'+memberId, 0))
-  .then(membersVotesInThisCard => t.set('card', 'shared', 'votesByMember.'+memberId, membersVotesInThisCard + selectedVote))
+  .then(() => t.card('id'))
+  .then(card => cardId = card.id)
+  .then(() => t.get('card', 'shared', `votesInCardByMember.${cardId}.${memberId}`, 0))
+  .then(membersVotesInThisCard => t.set('board', 'shared', `votesInCardByMember.${cardId}.${memberId}`, membersVotesInThisCard + selectedVote))
   .then(() => t.closePopup());
 }
 
 t.render(function(){
-  var memberId;
-  return t.member('id')
-  .then(member => Promise.all([t.get('board','shared', 'membersRemainings.'+member.id, 3), t.get('card','shared', 'votesByMember.'+member.id, 0)]))
+  return Promise.all([t.member('id'), t.card('id')])
+  .then(values => Promise.all([t.get('board','shared', 'membersRemainings.'+ values[0].id, 3), t.get('board','shared', `votesInCardByMember.${values[1].id}.${values[0].id}`, 0)]))
   .then(values => {
     var available = values[0];
     var voted = values [1];
