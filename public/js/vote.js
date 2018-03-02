@@ -40,7 +40,6 @@ $(document).ready(function () {
 function vote(selectedVote) {
   var memberId;
   var cardId;
-  console.log(selectedVote)
   return t.member('id')
   .then((member) => memberId = member.id)
   .then(() => t.card('id'))
