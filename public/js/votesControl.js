@@ -45,7 +45,7 @@ t.render(function(){
     var allVotes = values[0].board.shared;
     var allCards = values[2];
 
-    var topCards = Object.keys(allVotes).map(key => ({key: key, votes:allVotes[key]})).sort((a, b) => a.votes == b.votes ? 0 : (a.votes <b.votes ? 1 : -1)).slice(0, 3).map(pair => pair.key.split('.')[1]).map(cardId => allCards.find(card => cardId == card.id)).filter(card => card !== undefined)
+    var topCards = Object.values(_.groupBy(Object.keys(allVotes).map(key => ({key: key, votes:allVotes[key]})), pair => pair.key.split('.')[1])).map(array => _.reduce(array, (memo, pair) => ({key: pair.key.split('.')[1], votes: memo.votes + pair.votes}), {votes: 0})).sort((a, b) => a.votes == b.votes ? 0 : (a.votes <b.votes ? 1 : -1)).slice(0, 3).map(pair => ({votes: pair.votes, card: allCards.find(card => pair.key == card.id)}))
     var totalCount = _.reduce(Object.keys(allVotes).map(key => allVotes[key]), (x, y)=> x + y, 0);
     var remaingVotesPerMember = _.zip(allMembers , allMembers.map(member => Object.keys(allVotes).map(key => ({memberId: key.split('.')[2], votes:allVotes[key]})).filter(pair => pair.memberId == member.id)).map(array => _.reduce(array, (memo, pair) => memo + pair.votes, 0)).map(voted => 3 - voted)).sort((a, b) => a[1] == b[1] ? 0 : (a[1]>b[1] ? 1 : -1))
     
@@ -56,8 +56,10 @@ t.render(function(){
     $('#total-count').text(totalCount);
     
     topCards.forEach(cardData => {
-      $('#top-cards').append(`<li><a class="card-link" data-shortlink="${cardData.shortLink}" href="javascript:void(0);">${cardData.name}</li>`)
+      $('#top-cards').append(`<li><a class="card-link" data-shortlink="${cardData.card.shortLink}" href="javascript:void(0);">${cardData.card.name} (${cardData.votes})</li>`)
     });
+    
+    $('.card-link').click((event) => t.showCard($(event.target).data('shortlink')))
     
     remaingVotesPerMember.forEach((pair) => {
       var avatar = pair[0]['avatar'];
