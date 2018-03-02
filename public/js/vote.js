@@ -1,4 +1,5 @@
 var TrelloPowerUp = TrelloPowerUp || {}
+var _ = _ || {}
 
 var t = TrelloPowerUp.iframe();
 
@@ -39,28 +40,30 @@ $(document).ready(function () {
 function vote(selectedVote) {
   var memberId;
   var cardId;
+  console.log(selectedVote)
   return t.member('id')
-  .then((member) => {
-    memberId = member.id;
-    return t.get('board', 'shared', 'membersRemainings.'+memberId, 3);
-  })
-  .then(remaining => t.set('board', 'shared', 'membersRemainings.'+memberId, remaining - selectedVote ))
-  .then(() =>t.get('card', 'shared', 'count', 0))
-  .then(currentCount => t.set('card', 'shared', 'count', currentCount + selectedVote))
+  .then((member) => memberId = member.id)
   .then(() => t.card('id'))
   .then(card => cardId = card.id)
-  .then(() => t.get('card', 'shared', `votesInCardByMember.${cardId}.${memberId}`, 0))
+  .then(() => t.get('board', 'shared', `votesInCardByMember.${cardId}.${memberId}`, 0))
   .then(membersVotesInThisCard => t.set('board', 'shared', `votesInCardByMember.${cardId}.${memberId}`, membersVotesInThisCard + selectedVote))
   .then(() => t.closePopup());
 }
 
 t.render(function(){
-  return Promise.all([t.member('id'), t.card('id')])
-  .then(values => Promise.all([t.get('board','shared', 'membersRemainings.'+ values[0].id, 3), t.get('board','shared', `votesInCardByMember.${values[1].id}.${values[0].id}`, 0)]))
+  
+  return Promise.all([t.member('id'), t.card('id'), t.getAll()])
   .then(values => {
-    var available = values[0];
-    var voted = values [1];
-    var array = Array.apply(null, Array(voted)).map((_) => 'voted').concat(Array.apply(null, Array(available)).map((_) => 'available'));
+    var memberId = values[0].id;
+    var cardId = values[1].id;
+    
+    var allVotes = values[2].board.shared
+    
+    var totalVotedByThisMember = _.reduce(Object.keys(allVotes).filter(key => key.split('.')[2] == memberId).map(key => allVotes[key]), (x, y)=> x + y,0);
+    var votedByThisMemberInThisCard = allVotes[`votesInCardByMember.${cardId}.${memberId}`] || 0;
+    var available = 3 - totalVotedByThisMember;
+    
+    var array = Array.apply(null, Array(votedByThisMemberInThisCard)).map((_) => 'voted').concat(Array.apply(null, Array(available)).map((_) => 'available'));
     if (array.length <= 3) {
       array = array.concat(Array.apply(null, Array(3-array.length)).map((_) => 'unavailable'));
       array.forEach((css, i) => $('#vote-'+(i+1)).addClass(css));

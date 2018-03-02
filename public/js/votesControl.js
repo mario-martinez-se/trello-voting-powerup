@@ -38,45 +38,35 @@ function onReject(error) {
 }
 
 t.render(function(){
-  var allCards = [];
-  var memberThatVoted = [];
-  var allMembers = [];
-  var allCount = [];
-  return t.cards('id', 'name', 'shortLink')
-  .then(cards => {
-    allCards = cards;
-  })
-  .then(() => Promise.all(allCards.map(card => t.get(card.id, 'shared', 'count', 0))))
+  
+  return Promise.all([t.getAll(), t.board('members'), t.cards('id', 'name', 'shortLink')])
   .then(values => {
-    allCount = values;
-    var total = _.reduce(values, (memo, num) => memo + num, 0);
-    $('#total-count').text(total);
-  })
-  .then(() => t.board('members'))
-  .then(board => {
-    allMembers = board.members;
-    return Promise.all(allMembers.map(m => m.id).map(id => t.get('board', 'shared', 'membersRemainings.'+id, 3)))
-  })
-  .then(values => {
-    $('#top-cards').empty()
-    var sortedCards = _.zip(allCards, allCount).sort((a, b) => a[1] == b[1] ? 0 : (a[1]<b[1] ? 1 : -1)).map(pair => ({shortLink: pair[0]['shortLink'],name:pair[0]['name']}));
-    sortedCards.slice(0, 3).forEach(cardData => {
+    var allMembers = values[1].members;
+    var allVotes = values[0].board.shared;
+    var allCards = values[2];
+
+    var topCards = Object.keys(allVotes).map(key => ({key: key, votes:allVotes[key]})).sort((a, b) => a.votes == b.votes ? 0 : (a.votes <b.votes ? 1 : -1)).slice(0, 3).map(pair => pair.key.split('.')[1]).map(cardId => allCards.find(card => cardId == card.id)).filter(card => card !== undefined)
+    var totalCount = _.reduce(Object.keys(allVotes).map(key => allVotes[key]), (x, y)=> x + y, 0);
+    var remaingVotesPerMember = _.zip(allMembers , allMembers.map(member => Object.keys(allVotes).map(key => ({memberId: key.split('.')[2], votes:allVotes[key]})).filter(pair => pair.memberId == member.id)).map(array => _.reduce(array, (memo, pair) => memo + pair.votes, 0)).map(voted => 3 - voted)).sort((a, b) => a[1] == b[1] ? 0 : (a[1]>b[1] ? 1 : -1))
+    
+    $('#top-cards').empty();
+    $('#member-list').empty();
+    
+    
+    $('#total-count').text(totalCount);
+    
+    topCards.forEach(cardData => {
       $('#top-cards').append(`<li><a class="card-link" data-shortlink="${cardData.shortLink}" href="javascript:void(0);">${cardData.name}</li>`)
     });
     
-    $('.card-link').click((event) => {
-      t.showCard($(event.target).data('shortlink'));
-    });
-    
-    var remainingVotes = _.zip(allMembers, values);
-    $('#member-list').empty();
-    remainingVotes.sort((a, b) => a[1] == b[1] ? 0 : (a[1]>b[1] ? 1 : -1)).forEach((pair) => {
+    remaingVotesPerMember.forEach((pair) => {
       var avatar = pair[0]['avatar'];
       var initials = pair[0]['initials'];
       var count = pair[1];
       var icon = avatar ? `<img class='avatar-img' src=${avatar}>` : `<span class='initials'>${initials}</span>`      
       $('#member-list').append(`<li>${icon} <span class='stars'>${Array.apply(null, Array(count)).map(_ => "<span class='star-icon available'></span>").join('')}${Array.apply(null, Array(3-count)).map(_ => "<span class='star-icon unavailable'></span>").join('')}</span></li>`)
     });
+    
   })
   .then(() => t.sizeTo('#control-panel').done())
 
