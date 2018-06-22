@@ -14,6 +14,7 @@ $(document).ready(function () {
     Array.apply(null, Array(position)).map((_, i) => i).forEach(i => $('#vote-'+(i+1)).removeClass('active'));
   }).click((event) => {
     if ($(event.target).hasClass('available')) {
+      $('.voting-button').prop('disabled', true);
       var position = Number($(event.target).attr('id').split('vote-')[1]);
       var count = 0;
       $('.voting-button.available').each((_, item) => {
@@ -24,6 +25,7 @@ $(document).ready(function () {
       });
       return vote(count);
     } else if ($(event.target).hasClass('voted')) {
+      $('.voting-button').prop('disabled', true);
       var position = Number($(event.target).attr('id').split('vote-')[1]);
       var count = 0;
       $('.voting-button.voted').each((_, item) => {
@@ -32,10 +34,15 @@ $(document).ready(function () {
           count ++;
         }
       });
-      return vote(count * -1);
+      return vote(count * -1).then(() => $('.voting-button').prop('disabled', false));
     }
   });
 });
+
+//TODO: REMOVE
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 function vote(selectedVote) {
   var memberId;
