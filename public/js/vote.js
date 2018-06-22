@@ -23,7 +23,7 @@ $(document).ready(function () {
           count ++;
         }
       });
-      return vote(count);
+      return vote(count).then(() => $('.voting-button').prop('disabled', false).removeClass('active'));
     } else if ($(event.target).hasClass('voted')) {
       $('.voting-button').prop('disabled', true);
       var position = Number($(event.target).attr('id').split('vote-')[1]);
@@ -34,14 +34,37 @@ $(document).ready(function () {
           count ++;
         }
       });
-      return vote(count * -1).then(() => $('.voting-button').prop('disabled', false));
+      return vote(count * -1).then(() => $('.voting-button').prop('disabled', false).removeClass('active'));
     }
   });
 });
 
-//TODO: REMOVE
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function setVote(cardId, memberId, value) {
+  return repeatSetValue(cardId, memberId, value, 5);
+}
+
+/*
+  Recursively, tries to set value the number of attempts provided. It will add a delay that increases between attempts.
+*/
+function repeatSetValue(cardId, memberId, value, attempts) {
+  if (attempts > 0) {
+    return Promise.resolve(setValueInCardForMember(cardId, memberId, value))
+    .then(currentValue => currentValue === value ? true : sleep(3000/(attempts+1)).then(() => repeatSetValue(cardId, memberId, value, attempts -1 )))
+  } else {
+    return Promise.resolve(false);
+  }
+}
+
+/*
+  Sets the value in the card for the member and returns the value currently set.
+*/
+function setValueInCardForMember(cardId, memberId, value) {
+  return Promise.resolve(t.set('board', 'shared', `votesInCardByMember.${cardId}.${memberId}`, value))
+  .then(() => t.get('board', 'shared', `votesInCardByMember.${cardId}.${memberId}`, 0))
 }
 
 function vote(selectedVote) {
@@ -52,19 +75,8 @@ function vote(selectedVote) {
   .then(() => t.card('id'))
   .then(card => cardId = card.id)
   .then(() => t.get('board', 'shared', `votesInCardByMember.${cardId}.${memberId}`, 0))
-  //Set the new value and pass along the expected value
-  .then(membersVotesInThisCard => 
-        Promise.all([
-          t.set('board', 'shared', `votesInCardByMember.${cardId}.${memberId}`, membersVotesInThisCard + selectedVote),
-          membersVotesInThisCard + selectedVote
-        ])
-       )
-  //Get the value again and pass along the expected value
-  .then(values => Promise.all([t.get('board', 'shared', `votesInCardByMember.${cardId}.${memberId}`, 0), values[1]]))
-  //Check that the new value is properly set
-  .then(values => values[0] === values[1])
-  //Avoid closing the popUp unless the new value has been accepted
-  .then(shouldClosePopUp => shouldClosePopUp ? t.closePopup() : null);
+  .then(membersVotesInThisCard => setVote(cardId, memberId, membersVotesInThisCard + selectedVote))
+  .then(success => success ? t.closePopup() : null);
 }
 
 t.render(function(){
