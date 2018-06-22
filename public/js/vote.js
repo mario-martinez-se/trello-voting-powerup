@@ -1,4 +1,4 @@
-var TrelloPowerUp = TrelloPowerUp || {}
+  var TrelloPowerUp = TrelloPowerUp || {}
 var _ = _ || {}
 
 var t = TrelloPowerUp.iframe();
@@ -45,8 +45,19 @@ function vote(selectedVote) {
   .then(() => t.card('id'))
   .then(card => cardId = card.id)
   .then(() => t.get('board', 'shared', `votesInCardByMember.${cardId}.${memberId}`, 0))
-  .then(membersVotesInThisCard => t.set('board', 'shared', `votesInCardByMember.${cardId}.${memberId}`, membersVotesInThisCard + selectedVote))
-  .then(() => t.closePopup());
+  //Set the new value and pass along the expected value
+  .then(membersVotesInThisCard => 
+        Promise.all([
+          t.set('board', 'shared', `votesInCardByMember.${cardId}.${memberId}`, membersVotesInThisCard + selectedVote),
+          membersVotesInThisCard + selectedVote
+        ])
+       )
+  //Get the value again and pass along the expected value
+  .then(values => Promise.all([t.get('board', 'shared', `votesInCardByMember.${cardId}.${memberId}`, 0), values[1]]))
+  //Check that the new value is properly set
+  .then(values => values[0] === values[1])
+  //Avoid closing the popUp unless the new value has been accepted
+  .then(shouldClosePopUp => shouldClosePopUp ? t.closePopup() : null);
 }
 
 t.render(function(){
